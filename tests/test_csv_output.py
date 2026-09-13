@@ -51,7 +51,7 @@ def test_csv_output_columns_and_values(monkeypatch, tmp_path):
         reader = csv.DictReader(f)
         fieldnames = reader.fieldnames
         
-        expected_columns = ["datetime", "number of cell", "x range", "y range"]
+        expected_columns = ["datetime", "cell_number", "x_range", "y_range"]
         for col in expected_columns:
             assert col in fieldnames, f"Missing expected column '{col}' in CSV headers."
 
@@ -61,6 +61,6 @@ def test_csv_output_columns_and_values(monkeypatch, tmp_path):
         row = rows[0]
         # Validate exact correctness of values and ranges for coordinate (50.0, 50.0) in a 100x100 grid
         assert row["datetime"] == "2026-09-13 12:00:00"
-        assert row["number of cell"] == "1"
-        assert row["x range"] == "0 - 100"
-        assert row["y range"] == "0 - 100"
+        assert row["cell_number"] == "1"
+        assert row["x_range"] == "0 - 100"
+        assert row["y_range"] == "0 - 100"
