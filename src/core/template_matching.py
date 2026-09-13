@@ -11,7 +11,6 @@ OBJECT_OFFSET_Y = 0
 
 
 def init_object_template(img):
-    global OBJECT_TEMPLATE, OBJECT_OFFSET_X, OBJECT_OFFSET_Y
 
     h, w = img.shape[:2]
     logger.info(f"Initializing object template for image dimensions w={w}, h={h}")
@@ -76,7 +75,6 @@ def init_object_template(img):
 
 
 def find_object_xy(img):
-    global OBJECT_TEMPLATE, OBJECT_OFFSET_X, OBJECT_OFFSET_Y
 
     if OBJECT_TEMPLATE is None:
         logger.info("OBJECT_TEMPLATE is None; calling init_object_template.")
@@ -92,7 +90,7 @@ def find_object_xy(img):
 
     search = img[y_min:y_max, x_min:x_max]
     res = cv2.matchTemplate(search, OBJECT_TEMPLATE, cv2.TM_CCOEFF_NORMED)
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+    _min_val, max_val, _min_loc, max_loc = cv2.minMaxLoc(res)
     logger.debug(f"Template match score (max_val): {max_val:.4f} at relative loc {max_loc}")
 
     sx, sy = max_loc

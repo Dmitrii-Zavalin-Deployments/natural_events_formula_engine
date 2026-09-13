@@ -27,7 +27,7 @@ def main():
 
     try:
         config = load_config()
-    except Exception as e:
+    except (OSError, ValueError, KeyError, TypeError) as e:
         logger.error(str(e))
         sys.exit(1)
 
