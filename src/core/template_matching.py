@@ -42,7 +42,8 @@ def init_object_template(img):
     best = None
     best_len = 0
     for line in lines:
-        x1, y1, x2, y2 = line[0]
+        flat_line = line.ravel()
+        x1, y1, x2, y2 = flat_line[:4]
         if abs(y2 - y1) > 3:
             continue
         length = abs(x2 - x1)
@@ -85,7 +86,7 @@ def find_object_xy(img):
         return x_min, y_min, (x_min, y_min, x_min + tpl_w, y_min + tpl_h)
 
     res = cv2.matchTemplate(search, OBJECT_TEMPLATE, cv2.TM_CCOEFF_NORMED)
-    _, __max_val, _, max_loc = cv2.minMaxLoc(res)
+    _, _max_val, _, max_loc = cv2.minMaxLoc(res)
 
     sx, sy = max_loc
     object_x = x_min + sx + OBJECT_OFFSET_X
