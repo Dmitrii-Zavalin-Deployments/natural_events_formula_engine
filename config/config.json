@@ -1,4 +1,16 @@
 {
-  "project": "Natural Events Formula Engine",
-  "short_name": "natural_events_formula_engine"
+  "paths": {
+    "raw_folder": "data/raw/",
+    "processed_folder": "data/processed/",
+    "output_csv": "output/measurements.csv"
+  },
+
+  "grid": {
+    "grid_size_in_millimeters": 50,
+    "millimeters_per_pixel": 0.25,
+    "text_size": 32,
+    "text_color": "#FFFF00",
+    "grid_color": "#00FFFF",
+    "grid_thickness": 3
+  }
 }
