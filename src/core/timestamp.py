@@ -1,7 +1,6 @@
-from datetime import datetime, timezone
 import logging
 import os
-from datetime import datetime
+from datetime import datetime, timezone
 
 logger = logging.getLogger(__name__)
 

@@ -32,8 +32,8 @@ def init_object_template(img):
         y1 = y_min + (y_max - y_min) // 2 - tpl_h // 2
         x1 = x_min + (x_max - x_min) // 2 - tpl_w // 2
         OBJECT_TEMPLATE = img[y1:y1 + tpl_h, x1:x1 + tpl_w].copy()
-        OBJECT_OFFSET_X = tpl_w // 2
-        OBJECT_OFFSET_Y = tpl_h // 2
+        tpl_w // 2
+        tpl_h // 2
         logger.info(f"Fallback template initialized with shape {OBJECT_TEMPLATE.shape[:2]}")
         return
 
@@ -69,8 +69,8 @@ def init_object_template(img):
     OBJECT_TEMPLATE = img[tpl_y1:tpl_y2, tpl_x1:tpl_x2].copy()
     tpl_h, tpl_w = OBJECT_TEMPLATE.shape[:2]
 
-    OBJECT_OFFSET_X = tpl_w // 2
-    OBJECT_OFFSET_Y = tpl_h // 2
+    tpl_w // 2
+    tpl_h // 2
     logger.info(f"Primary template initialized with bounds x=[{tpl_x1}, {tpl_x2}], y=[{tpl_y1}, {tpl_y2}]")
 
 
