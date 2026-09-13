@@ -1,8 +1,72 @@
 {
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Natural Events Formula Engine Configuration Schema",
   "type": "object",
+
   "properties": {
-    "project": { "type": "string" },
-    "short_name": { "type": "string" }
+    "paths": {
+      "type": "object",
+      "properties": {
+        "raw_folder": {
+          "type": "string",
+          "description": "Path to the folder containing raw input images."
+        },
+        "processed_folder": {
+          "type": "string",
+          "description": "Path to the folder where processed images will be saved."
+        },
+        "output_csv": {
+          "type": "string",
+          "description": "Path to the CSV file where measurement results will be written."
+        }
+      },
+      "required": ["raw_folder", "processed_folder", "output_csv"]
+    },
+
+    "grid": {
+      "type": "object",
+      "properties": {
+        "grid_size_in_millimeters": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Physical size of each grid cell in millimeters."
+        },
+        "millimeters_per_pixel": {
+          "type": "number",
+          "minimum": 0.000001,
+          "description": "Camera calibration factor: how many millimeters correspond to one pixel."
+        },
+        "text_size": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Font size for grid cell labels."
+        },
+        "text_color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Hex color code for text labels (e.g., #FFFF00)."
+        },
+        "grid_color": {
+          "type": "string",
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Hex color code for grid lines."
+        },
+        "grid_thickness": {
+          "type": "number",
+          "minimum": 1,
+          "description": "Thickness of grid lines in pixels."
+        }
+      },
+      "required": [
+        "grid_size_in_millimeters",
+        "millimeters_per_pixel",
+        "text_size",
+        "text_color",
+        "grid_color",
+        "grid_thickness"
+      ]
+    }
   },
-  "required": ["project", "short_name"]
+
+  "required": ["paths", "grid"]
 }
