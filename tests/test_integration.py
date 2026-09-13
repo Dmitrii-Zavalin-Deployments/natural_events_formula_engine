@@ -6,6 +6,36 @@ import subprocess
 import sys
 from unittest.mock import patch
 
+_original_popen = subprocess.Popen
+
+
+class _MockProc:
+    def __init__(self, *args, **kwargs):
+        self.args = args[0] if args else []
+        self.returncode = 0
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        pass
+
+    def communicate(self, input=None, timeout=None):
+        return ("", "")
+
+    def poll(self):
+        return self.returncode
+
+    def wait(self):
+        return self.returncode
+
+
+def _smart_popen(args, *a, **k):
+    cmd_str = " ".join(args) if isinstance(args, (list, tuple)) else str(args)
+    if sys.executable in cmd_str or "measure_object.py" in cmd_str or "coverage" in cmd_str:
+        return _original_popen(args, *a, **k)
+    return _MockProc(args, *a, **k)
+
 
 def test_integration_measure_object_dry_run(temp_environment):
     """Integration test executing measure_object.py in dry_run mode."""
@@ -57,28 +87,7 @@ def test_integration_measure_object_dry_run(temp_environment):
     assert processed_img.exists()
 
 
-class _MockProc:
-    def __init__(self, *args, **kwargs):
-        self.args = args[0] if args else []
-        self.returncode = 0
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *a):
-        pass
-
-    def communicate(self, input=None, timeout=None):
-        return ("", "")
-
-    def poll(self):
-        return self.returncode
-
-    def wait(self):
-        return self.returncode
-
-
-@patch("subprocess.Popen", side_effect=lambda *a, **k: _MockProc(*a, **k))
+@patch("subprocess.Popen", side_effect=_smart_popen)
 def test_integration_measure_object_full_measurements(mock_popen, temp_environment):
     """Integration test executing measure_object.py in measurements mode."""
     config_content = {
