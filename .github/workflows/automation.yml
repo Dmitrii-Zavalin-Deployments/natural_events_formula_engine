@@ -389,7 +389,7 @@ jobs:
           3. Execute `./start_measurements.sh`.
           4. Review visual outputs in Firefox and complete terminal prompts.
 
-          ### 🔄 Execution Pipeline Architecture / Output
+          ### 🔄 Execution Pipeline Output
 
           <table align="center" style="border: 1px solid white; border-collapse: collapse; background: transparent;">
             <tr>
