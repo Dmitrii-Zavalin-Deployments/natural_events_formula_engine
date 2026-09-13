@@ -23,7 +23,7 @@ def init_object_template(img):
     roi = img[y_min:y_max, x_min:x_max]
     if roi.size == 0:
         logger.warning("Empty ROI encountered; fallback to full-frame center.")
-        OBJECT_TEMPLATE = img[int(h * 0.4):int(h * 0.6), int(w * 0.4):int(w * 0.6)].copy()
+        OBJECT_TEMPLATE = img[int(h * 0.4):max(int(h * 0.6), 1), int(w * 0.4):max(int(w * 0.6), 1)].copy()
         return
 
     gray = cv2.cvtColor(roi, cv2.COLOR_BGR2GRAY)

@@ -108,7 +108,6 @@ jobs:
         run: |
           echo "🚀 Initiating: $TEST_COMMAND inside virtual frame buffer"
           xvfb-run --auto-servernum sh -c "$TEST_COMMAND"
-          python -m coverage combine || true
 
       - name: 🔍 Forensic Audit
         if: always()
