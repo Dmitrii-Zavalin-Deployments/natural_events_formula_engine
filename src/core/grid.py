@@ -86,6 +86,6 @@ def process_and_save_grid_image(raw_path, processed_path, grid_config):
     img = cv2.imread(raw_path)
     if img is None:
         return False, []
-    grid_img, meta = draw_clean_cell_grid(img, grid_config)
+    grid_img, meta = draw_high_visibility_grid(img, grid_config)
     cv2.imwrite(processed_path, grid_img)
     return True, meta
