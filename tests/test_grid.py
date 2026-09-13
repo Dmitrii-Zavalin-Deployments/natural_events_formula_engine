@@ -1,8 +1,12 @@
-import os
 import cv2
 import numpy as np
-import pytest
-from src.core.grid import hex_to_bgr, draw_high_visibility_grid, get_cell_info_by_coords, process_and_save_grid_image
+
+from src.core.grid import (
+    draw_high_visibility_grid,
+    get_cell_info_by_coords,
+    hex_to_bgr,
+    process_and_save_grid_image,
+)
 
 
 def test_hex_to_bgr():
