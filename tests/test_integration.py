@@ -38,7 +38,7 @@ def test_integration_measure_object_dry_run(temp_environment):
     env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
 
     result = subprocess.run(
-        [sys.executable, script_path],
+        [sys.executable, "-m", "coverage", "run", "--parallel-mode", script_path],
         capture_output=True,
         text=True,
         cwd=temp_environment,
@@ -59,6 +59,7 @@ def test_integration_measure_object_dry_run(temp_environment):
 
 class _MockProc:
     def __init__(self, *args, **kwargs):
+        self.args = args[0] if args else []
         self.returncode = 0
 
     def __enter__(self):
@@ -109,7 +110,7 @@ def test_integration_measure_object_full_measurements(mock_popen, temp_environme
     env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
 
     result = subprocess.run(
-        [sys.executable, script_path],
+        [sys.executable, "-m", "coverage", "run", "--parallel-mode", script_path],
         input="12\n",
         capture_output=True,
         text=True,
@@ -130,5 +131,5 @@ def test_integration_measure_object_full_measurements(mock_popen, temp_environme
         reader = list(csv.reader(f))
         assert len(reader) >= 2
         assert reader[0] == ["datetime", "cell_number", "x_range", "y_range"]
-        assert reader[1] == "2026-09-08 15:29:21"
-        assert reader[1] == "12"
+        assert reader[1][0] == "2026-09-08 15:29:21"
+        assert reader[1][1] == "12"
