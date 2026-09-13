@@ -56,11 +56,16 @@ def test_integration_measure_object_dry_run(temp_environment):
     assert processed_img.exists()
 
 
-@patch("subprocess.Popen")
+class _MockProc:
+    def __enter__(self): return self
+    def __exit__(self, *a): pass
+    def communicate(self, input=None, timeout=None): return ("", "")
+    @property
+    def returncode(self): return 0
+
+@patch("subprocess.Popen", side_effect=lambda *a, **k: _MockProc())
 def test_integration_measure_object_full_measurements(mock_popen, temp_environment):
     """Integration test executing measure_object.py in measurements mode."""
-    mock_popen.return_value.communicate.return_value = ("", "")
-    mock_popen.return_value.returncode = 0
 
     config_content = {
         "mode": "measurements",

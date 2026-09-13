@@ -1,0 +1,6 @@
+[run]
+parallel = true
+source = src
+
+[paths]
+source = src/
