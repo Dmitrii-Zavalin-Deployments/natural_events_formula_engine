@@ -46,6 +46,13 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
+          cache: 'pip'
+
+      - name: 📦 Provision Environment Layers & Build via Requirements
+        run: |
+          python3 -m pip install --upgrade pip
+          chmod +x requirements.sh
+          ./requirements.sh
 
       - name: 🌐 Install Headless Rendering Dependencies
         run: |
