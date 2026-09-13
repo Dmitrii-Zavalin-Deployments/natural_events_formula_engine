@@ -283,7 +283,7 @@ jobs:
           done &
           SAMPLER_PID=$!
 
-          INPUT_FILE="data/testing-input-output/input.json"
+          INPUT_FILE="data/testing-input-output/IMG_20260908_152921.jpg"
           if [ ! -f "$INPUT_FILE" ]; then
             echo "❌ CRITICAL ERROR: Input file context missing at $INPUT_FILE."
             exit 1
