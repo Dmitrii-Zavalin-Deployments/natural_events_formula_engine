@@ -1,8 +1,8 @@
 import csv
-import os
+
 import cv2
 import numpy as np
-import pytest
+
 from measure_object import main
 
 
