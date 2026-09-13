@@ -326,7 +326,7 @@ jobs:
           git stash pop || true
 
           # 4. Add the specific test folder
-          git add data/testing-input-output/
+          git add data/
 
           # 5. Commit/Push with Notes
           if [ -n "$(git status --porcelain data/testing-input-output/)" ]; then
