@@ -379,7 +379,8 @@ jobs:
           # 🌊 Natural Events Formula Engine
 
           ## 🛠️ Description
-          Computational framework for natural event formula processing. *Note:* GitHub Actions execute in **dry-run mode only**. 
+          Computational framework for natural event formula processing.
+          *Note:* GitHub Actions execute in **dry-run mode only**. 
 
           To perform live measurements:
           1. Clone the repository locally on an **Ubuntu** environment.
