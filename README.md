@@ -12,18 +12,18 @@ To perform live measurements:
 ### 🔄 Execution Pipeline Architecture / Output
 
 <table align="center" style="border: 1px solid white; border-collapse: collapse; background: transparent;">
-            <tr>
-              <td style="border: 1px solid white; text-align: center; vertical-align: middle; padding: 0 8px; background: transparent;">
-                <img src="data/raw/IMG_20260908_152921.jpg" width="210" />
-              </td>
-              <td style="border: 1px solid white; text-align: center; vertical-align: middle; padding: 0 12px; font-size: 32px; color: #666; background: transparent;">
-                &rarr;
-              </td>
-              <td style="border: 1px solid white; text-align: center; vertical-align: middle; padding: 0 8px; background: transparent;">
-                <img src="data/processed/IMG_20260908_152921.jpg" width="210" />
-              </td>
-            </tr>
-          </table>
+  <tr>
+    <td style="border: 1px solid white; text-align: center; vertical-align: middle; padding: 0 8px; background: transparent;">
+      <img src="data/raw/IMG_20260908_152921.jpg" width="320" />
+    </td>
+    <td style="border: 1px solid white; text-align: center; vertical-align: middle; padding: 0 12px; font-size: 32px; color: #666; background: transparent;">
+      &rarr;
+    </td>
+    <td style="border: 1px solid white; text-align: center; vertical-align: middle; padding: 0 8px; background: transparent;">
+      <img src="data/processed/IMG_20260908_152921.jpg" width="320" />
+    </td>
+  </tr>
+</table>
 
 ### 📚 Resources & Documentation
 
@@ -32,6 +32,12 @@ To perform live measurements:
 ---
 
 ### 🧮 Performance Audit:
+### Audit: 2026-09-13 14:16:47 UTC
+- **Branch:** `main`
+- **Status:** `success`
+- **Run:** [Detailed Execution Logs](https://github.com/Dmitrii-Zavalin-Deployments/natural_events_formula_engine/actions/runs/34762175402)
+- **CPU Load:** `27.9%`
+- **Memory Usage:** `164/15989MB`
 ### Audit: 2026-09-13 14:12:45 UTC
 - **Branch:** `main`
 - **Status:** `success`
