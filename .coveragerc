@@ -1,6 +1,7 @@
 [run]
 parallel = true
 source = src
+concurrency = thread,multiprocessing
 
 [paths]
 source = src/

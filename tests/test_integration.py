@@ -35,6 +35,7 @@ def test_integration_measure_object_dry_run(temp_environment):
 
     env = os.environ.copy()
     env["PYTHONPATH"] = os.path.join(repo_root, "src")
+    env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
 
     result = subprocess.run(
         [sys.executable, script_path],
@@ -57,16 +58,28 @@ def test_integration_measure_object_dry_run(temp_environment):
 
 
 class _MockProc:
-    def __enter__(self): return self
-    def __exit__(self, *a): pass
-    def communicate(self, input=None, timeout=None): return ("", "")
-    @property
-    def returncode(self): return 0
+    def __init__(self, *args, **kwargs):
+        self.returncode = 0
 
-@patch("subprocess.Popen", side_effect=lambda *a, **k: _MockProc())
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *a):
+        pass
+
+    def communicate(self, input=None, timeout=None):
+        return ("", "")
+
+    def poll(self):
+        return self.returncode
+
+    def wait(self):
+        return self.returncode
+
+
+@patch("subprocess.Popen", side_effect=lambda *a, **k: _MockProc(*a, **k))
 def test_integration_measure_object_full_measurements(mock_popen, temp_environment):
     """Integration test executing measure_object.py in measurements mode."""
-
     config_content = {
         "mode": "measurements",
         "paths": {
@@ -93,6 +106,7 @@ def test_integration_measure_object_full_measurements(mock_popen, temp_environme
 
     env = os.environ.copy()
     env["PYTHONPATH"] = os.path.join(repo_root, "src")
+    env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
 
     result = subprocess.run(
         [sys.executable, script_path],
@@ -116,5 +130,5 @@ def test_integration_measure_object_full_measurements(mock_popen, temp_environme
         reader = list(csv.reader(f))
         assert len(reader) >= 2
         assert reader[0] == ["datetime", "cell_number", "x_range", "y_range"]
-        assert reader[0] == "2026-09-08 15:29:21"
-        assert reader == "12"
+        assert reader[1] == "2026-09-08 15:29:21"
+        assert reader[1] == "12"
