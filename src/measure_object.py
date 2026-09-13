@@ -5,12 +5,13 @@ import logging
 import os
 import subprocess
 import sys
+
 import cv2
 
 from core.config_loader import load_config
-from core.timestamp import parse_timestamp_from_filename
-from core.grid import process_and_save_grid_image, get_cell_info_by_coords
+from core.grid import get_cell_info_by_coords, process_and_save_grid_image
 from core.template_matching import process_image
+from core.timestamp import parse_timestamp_from_filename
 
 logging.basicConfig(
     level=logging.INFO,

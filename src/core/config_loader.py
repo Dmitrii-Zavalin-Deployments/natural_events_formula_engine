@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+
 from jsonschema import SchemaError, ValidationError, validate
 
 logger = logging.getLogger(__name__)
