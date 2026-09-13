@@ -233,10 +233,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       PYTHONPATH: ${{ github.workspace }}
-      ASAN_OPTIONS: "detect_leaks=0"
-      APP_KEY: ${{ secrets.APP_KEY }}
-      APP_SECRET: ${{ secrets.APP_SECRET }}
-      REFRESH_TOKEN: ${{ secrets.REFRESH_TOKEN }}
 
     steps:
       - name: 🗂️ Checkout Repository
@@ -268,18 +264,12 @@ jobs:
           python-version: "3.11"
           cache: 'pip'
 
-      - name: 📦 Provision Environment Layers & C++ Build (Pip & CMake)
+      - name: 🌐 Install Headless Rendering Dependencies
         run: |
-          python -m pip install --upgrade pip
-          chmod +x requirements.sh
-          ./requirements.sh
-
-      # - name: 🌐 Install Headless Rendering Dependencies
-      #   run: |
-      #     # Establish virtual display device infrastructure and OpenGL bindings
-      #     sudo apt-get update -y
-      #     # libgl1 replaces the deprecated libgl1-mesa-glx on Ubuntu 24.04+
-      #     sudo apt-get install -y libgl1 xvfb libglu1-mesa
+          # Establish virtual display device infrastructure and OpenGL bindings
+          sudo apt-get update -y
+          # libgl1 replaces the deprecated libgl1-mesa-glx on Ubuntu 24.04+
+          sudo apt-get install -y libgl1 xvfb libglu1-mesa
 
       # - name: 🚀 Execute main.py with Live Profiling
       #   run: |
