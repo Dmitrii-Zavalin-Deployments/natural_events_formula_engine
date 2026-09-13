@@ -65,8 +65,8 @@ def draw_high_visibility_grid(img, grid_config):
             # Fixed tuple indexing org for vertical text bounding box
             cv2.rectangle(
                 overlay,
-                (org[0] - 4, org - th - 3),
-                (org[0] + tw + 4, org + baseline + 3),
+                (org[0] - 4, org[1] - th - 3),
+                (org[0] + tw + 4, org[1] + baseline + 3),
                 (0, 0, 0),
                 cv2.FILLED,
             )
