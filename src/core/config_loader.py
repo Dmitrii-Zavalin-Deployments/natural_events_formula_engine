@@ -19,7 +19,7 @@ def load_config(config_path="config/config.json", schema_path=DEFAULT_SCHEMA_PAT
         with open(config_path, "r") as f:
             config = json.load(f)
     except json.JSONDecodeError as e:
-        logger.error(f"Invalid JSON in config file: {e}")
+        logger.error(f"Invalid JSON format detected in config file '{config_path}': {e}")
         raise ValueError(
             f"[CONFIG ERROR] Invalid JSON format in {config_path}: {e}"
         )
@@ -37,13 +37,13 @@ def load_config(config_path="config/config.json", schema_path=DEFAULT_SCHEMA_PAT
     except ValidationError as e:
         loc = "->".join(str(p) for p in e.path) if e.path else "root"
         err_msg = f"Validation failed at [{loc}]: {e.message}"
-        logger.error(f"Config schema validation failed: {err_msg}")
+        logger.error(f"Config schema validation failed for '{config_path}': {err_msg}")
         raise ValueError(
             f"[CONFIG ERROR] Schema validation failed for {config_path}: {err_msg}"
         )
     except SchemaError as e:
-        logger.error(f"Invalid schema definition in schema file: {e}")
+        logger.error(f"Invalid schema definition in '{schema_path}': {e}")
         raise ValueError(f"[CONFIG ERROR] Invalid schema definition: {e}")
 
-    logger.info("Configuration loaded and validated against schema successfully.")
+    logger.info(f"Configuration loaded and successfully validated from {config_path}.")
     return config
