@@ -16,7 +16,7 @@ jobs:
       PYTHONPATH: ${{ github.workspace }}
       FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
       # Define the 'Gold Standard' test command here (e.g. # pytest -s tests/ -vv --cov=src --cov-report=term-missing)
-      TEST_COMMAND: "pytest -s tests/ -vv --cov=src --cov-report=term-missing && python -m coverage combine"
+      TEST_COMMAND: "pytest -s tests/ -vv --cov=src --cov-report=term-missing"
 
     steps:
       - name: 🗂️ Checkout Repository
@@ -107,7 +107,8 @@ jobs:
       - name: 🧪 Run Logic & Scientific Verification
         run: |
           echo "🚀 Initiating: $TEST_COMMAND inside virtual frame buffer"
-          xvfb-run --auto-servernum $TEST_COMMAND
+          xvfb-run --auto-servernum sh -c "$TEST_COMMAND"
+          python -m coverage combine || true
 
       - name: 🔍 Forensic Audit
         if: always()
