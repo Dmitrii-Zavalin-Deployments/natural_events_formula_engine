@@ -1,21 +1,24 @@
 import json
 import logging
 import os
+from jsonschema import SchemaError, ValidationError, validate
 
 logger = logging.getLogger(__name__)
 
-REQUIRED_FIELDS = ["raw_folder", "processed_folder", "output_csv"]
+DEFAULT_SCHEMA_PATH = "schema/config_schema.json"
 
 
-def load_config(config_path="config/config.json"):
+def load_config(
+    config_path="config/config.json", schema_path=DEFAULT_SCHEMA_PATH
+):
     """
-    Load configuration from JSON file.
+    Load configuration from JSON file and validate against JSON schema.
     Enforces:
-      - file must exist
+      - config file must exist
+      - schema file must exist
       - JSON must be valid
-      - required fields must be present
+      - schema validation passes against schema/config_schema.json
     """
-
     if not os.path.exists(config_path):
         logger.error(f"Configuration file missing: {config_path}")
         raise FileNotFoundError(
@@ -31,13 +34,24 @@ def load_config(config_path="config/config.json"):
             f"[CONFIG ERROR] Invalid JSON format in {config_path}: {e}"
         )
 
-    missing = [field for field in REQUIRED_FIELDS if field not in config]
-    if missing:
-        logger.error(f"Missing required config fields: {missing}")
-        raise KeyError(
-            f"[CONFIG ERROR] Missing required fields in {config_path}: {missing}"
+    if not os.path.exists(schema_path):
+        logger.error(f"Schema file missing: {schema_path}")
+        raise FileNotFoundError(
+            f"[CONFIG ERROR] Required schema file not found: {schema_path}"
         )
 
-    logger.info("Configuration loaded successfully.")
-    return config
+    try:
+        with open(schema_path, "r") as sf:
+            schema = json.load(sf)
+        validate(instance=config, schema=schema)
+    except ValidationError as e:
+        logger.error(f"Config schema validation failed: {e.message}")
+        raise ValueError(
+            f"[CONFIG ERROR] Schema validation failed for {config_path}: {e.message}"
+        )
+    except SchemaError as e:
+        logger.error(f"Invalid schema definition in {schema_path}: {e}")
+        raise ValueError(f"[CONFIG ERROR] Invalid schema definition: {e}")
 
+    logger.info("Configuration loaded and validated against schema successfully.")
+    return config
