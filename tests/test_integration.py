@@ -59,6 +59,9 @@ def test_integration_measure_object_dry_run(temp_environment):
 @patch("subprocess.Popen")
 def test_integration_measure_object_full_measurements(mock_popen, temp_environment):
     """Integration test executing measure_object.py in measurements mode."""
+    mock_popen.return_value.communicate.return_value = ("", "")
+    mock_popen.return_value.returncode = 0
+
     config_content = {
         "mode": "measurements",
         "paths": {
