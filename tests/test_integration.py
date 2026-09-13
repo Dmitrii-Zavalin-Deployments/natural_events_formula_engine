@@ -66,6 +66,7 @@ def test_integration_measure_object_dry_run(temp_environment):
     env = os.environ.copy()
     env["PYTHONPATH"] = os.path.join(repo_root, "src")
     env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
+    env["AUTOMATED_TEST"] = "1"
 
     result = subprocess.run(
         [sys.executable, "-m", "coverage", "run", "--parallel-mode", script_path],
@@ -117,6 +118,7 @@ def test_integration_measure_object_full_measurements(mock_popen, temp_environme
     env = os.environ.copy()
     env["PYTHONPATH"] = os.path.join(repo_root, "src")
     env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
+    env["AUTOMATED_TEST"] = "1"
 
     result = subprocess.run(
         [sys.executable, "-m", "coverage", "run", "--parallel-mode", script_path],
