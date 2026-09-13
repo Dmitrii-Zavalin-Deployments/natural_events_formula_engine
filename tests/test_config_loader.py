@@ -1,5 +1,7 @@
 import json
+
 import pytest
+
 from src.core.config_loader import load_config
 
 
