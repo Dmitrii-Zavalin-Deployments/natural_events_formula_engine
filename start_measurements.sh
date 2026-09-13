@@ -39,7 +39,7 @@ pip install --upgrade pip
 pip install opencv-python-headless numpy
 
 echo "[INFO] Running measurement script..."
-python3 src/measure_platform.py "$RAW_DIR" "$PROCESSED_DIR" "$OUTPUT_CSV"
+python3 src/measure_object.py "$RAW_DIR" "$PROCESSED_DIR" "$OUTPUT_CSV"
 
 echo "[INFO] Cleaning up..."
 deactivate
