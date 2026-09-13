@@ -5,15 +5,13 @@ import logging
 import os
 import subprocess
 import sys
+import cv2
 
 from core.config_loader import load_config
 from core.timestamp import parse_timestamp_from_filename
-from core.grid import process_and_save_grid_image
+from core.grid import process_and_save_grid_image, get_cell_info_by_coords
 from core.template_matching import process_image
 
-# ------------------------------------------------------------
-# Logging Setup
-# ------------------------------------------------------------
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(message)s",
@@ -26,9 +24,6 @@ logger = logging.getLogger(__name__)
 def main():
     logger.info("Starting Natural Events Formula Engine measurement run...")
 
-    # ------------------------------------------------------------
-    # Load configuration (strict, no-default policy)
-    # ------------------------------------------------------------
     try:
         config = load_config()
     except Exception as e:
@@ -40,17 +35,15 @@ def main():
         raw_folder = config["paths"]["raw_folder"]
         processed_folder = config["paths"]["processed_folder"]
         output_csv = config["paths"]["output_csv"]
+        grid_config = config["grid"]
     except KeyError as e:
         logger.error(f"[CONFIG ERROR] Missing mandatory key in config: {e}")
         sys.exit(1)
 
-    logger.info(f"Mode: {mode} | Raw folder: {raw_folder} | Processed folder: {processed_folder}")
-
-    # ------------------------------------------------------------
-    # Validate folders & mode compliance
-    # ------------------------------------------------------------
     if mode not in {"dry_run", "measurements"}:
-        logger.error(f"[CONFIG ERROR] Invalid execution mode '{mode}'. Expected 'dry_run' or 'measurements'.")
+        logger.error(
+            f"[CONFIG ERROR] Invalid execution mode '{mode}'. Expected 'dry_run' or 'measurements'."
+        )
         sys.exit(1)
 
     if not os.path.exists(raw_folder):
@@ -75,17 +68,17 @@ def main():
     if mode == "measurements":
         print("\nEach image will open in Firefox. Enter the measurement cell number.\n")
 
-    # ------------------------------------------------------------
-    # Manual mode / Inspection preparation
-    # ------------------------------------------------------------
+    image_meta_map = {}
     for idx, fn in enumerate(files, start=1):
         raw_path = os.path.join(raw_folder, fn)
         processed_path = os.path.join(processed_folder, fn)
         timestamp = parse_timestamp_from_filename(fn)
 
-        if not process_and_save_grid_image(raw_path, processed_path):
+        ok, meta = process_and_save_grid_image(raw_path, processed_path, grid_config)
+        if not ok:
             logger.warning(f"Could not read {fn}, skipping.")
             continue
+        image_meta_map[fn] = meta
 
         if mode == "measurements":
             abs_processed_path = os.path.abspath(processed_path)
@@ -94,31 +87,40 @@ def main():
             print(f"[{idx}/{len(files)}] Image: {fn} | Time: {timestamp}")
             cell_input = input(" -> Enter Natural Event Cell Number: ").strip()
         else:
-            cell_input = "DRY_RUN_SKIPPED"
+            cell_input = "0"
             logger.info(f"[{idx}/{len(files)}] [DRY-RUN] Bypassed GUI/CLI prompt for {fn}")
 
-        records.append((timestamp, cell_input))
+        records.append((timestamp, fn, cell_input))
 
-    # ------------------------------------------------------------
-    # Automatic mode / Output serialization
-    # ------------------------------------------------------------
     if mode == "dry_run":
-        logger.info(f"[DRY-RUN] Would process template matching and write to {output_csv}. Skipping file write.")
+        logger.info(
+            f"[DRY-RUN] Would process template matching and write to {output_csv}. Skipping file write."
+        )
     else:
-        logger.info("Running automatic template-matching measurements...")
+        logger.info("Running automatic template-matching measurements & serialization...")
         with open(output_csv, "w", newline="") as f:
             writer = csv.writer(f)
-            writer.writerow(["time", "manual_cell", "auto_x_px", "auto_y_px"])
+            writer.writerow(["datetime", "cell_number", "x_range", "y_range"])
 
-            # Manual entries
-            for ts, cell_val in records:
-                writer.writerow([ts, cell_val, "", ""])
+            # Process manual reference entries
+            for ts, fn, cell_val in records:
+                meta = image_meta_map.get(fn, [])
+                resolved_cell = int(cell_val) if cell_val.isdigit() else 0
+                x_rng, y_rng = "N/A", "N/A"
+                for m in meta:
+                    if m["cell_number"] == resolved_cell:
+                        x_rng, y_rng = m["x_range"], m["y_range"]
+                        break
+                writer.writerow([ts, resolved_cell, x_rng, y_rng])
 
-            # Automatic entries
+            # Process automatic detections
             for fn in files:
                 raw_path = os.path.join(raw_folder, fn)
                 processed_path = os.path.join(processed_folder, fn)
                 timestamp = parse_timestamp_from_filename(fn)
+
+                img = cv2.imread(raw_path)
+                h, w = img.shape[:2] if img is not None else (1000, 1000)
 
                 result = process_image(raw_path, processed_path)
                 if result is None:
@@ -126,8 +128,13 @@ def main():
                     continue
 
                 object_x, object_y = result
-                writer.writerow([timestamp, "", object_x, object_y])
-                logger.info(f"{timestamp} → X={object_x:.2f}px, Y={object_y:.2f}px")
+                cell_num, x_range, y_range = get_cell_info_by_coords(
+                    object_x, object_y, w, h, grid_config
+                )
+                writer.writerow([timestamp, cell_num, x_range, y_range])
+                logger.info(
+                    f"{timestamp} → cell={cell_num}, x_range={x_range}, y_range={y_range}"
+                )
 
     logger.info("Measurement run complete.")
 

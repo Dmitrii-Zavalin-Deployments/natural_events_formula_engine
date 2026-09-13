@@ -29,15 +29,15 @@
     "grid": {
       "type": "object",
       "properties": {
-        "grid_size_in_millimeters": {
+        "cell_width_px": {
           "type": "number",
           "minimum": 1,
-          "description": "Physical size of each grid cell in millimeters."
+          "description": "Width of each grid cell in pixels."
         },
-        "millimeters_per_pixel": {
+        "cell_height_px": {
           "type": "number",
-          "minimum": 0.000001,
-          "description": "Camera calibration factor: how many millimeters correspond to one pixel."
+          "minimum": 1,
+          "description": "Height of each grid cell in pixels."
         },
         "text_size": {
           "type": "number",
@@ -61,8 +61,8 @@
         }
       },
       "required": [
-        "grid_size_in_millimeters",
-        "millimeters_per_pixel",
+        "cell_width_px",
+        "cell_height_px",
         "text_size",
         "text_color",
         "grid_color",

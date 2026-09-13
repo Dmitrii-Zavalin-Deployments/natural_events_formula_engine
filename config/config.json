@@ -6,8 +6,8 @@
     "output_csv": "output/measurements.csv"
   },
   "grid": {
-    "grid_size_in_millimeters": 50,
-    "millimeters_per_pixel": 0.25,
+    "cell_width_px": 250,
+    "cell_height_px": 100,
     "text_size": 32,
     "text_color": "#FFFF00",
     "grid_color": "#00FFFF",
