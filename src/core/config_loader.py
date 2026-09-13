@@ -4,21 +4,10 @@ import os
 from jsonschema import SchemaError, ValidationError, validate
 
 logger = logging.getLogger(__name__)
-
 DEFAULT_SCHEMA_PATH = "schema/config_schema.json"
 
 
-def load_config(
-    config_path="config/config.json", schema_path=DEFAULT_SCHEMA_PATH
-):
-    """
-    Load configuration from JSON file and validate against JSON schema.
-    Enforces:
-      - config file must exist
-      - schema file must exist
-      - JSON must be valid
-      - schema validation passes against schema/config_schema.json
-    """
+def load_config(config_path="config/config.json", schema_path=DEFAULT_SCHEMA_PATH):
     if not os.path.exists(config_path):
         logger.error(f"Configuration file missing: {config_path}")
         raise FileNotFoundError(
@@ -45,12 +34,14 @@ def load_config(
             schema = json.load(sf)
         validate(instance=config, schema=schema)
     except ValidationError as e:
-        logger.error(f"Config schema validation failed: {e.message}")
+        loc = "->".join(str(p) for p in e.path) if e.path else "root"
+        err_msg = f"Validation failed at [{loc}]: {e.message}"
+        logger.error(f"Config schema validation failed: {err_msg}")
         raise ValueError(
-            f"[CONFIG ERROR] Schema validation failed for {config_path}: {e.message}"
+            f"[CONFIG ERROR] Schema validation failed for {config_path}: {err_msg}"
         )
     except SchemaError as e:
-        logger.error(f"Invalid schema definition in {schema_path}: {e}")
+        logger.error(f"Invalid schema definition in schema file: {e}")
         raise ValueError(f"[CONFIG ERROR] Invalid schema definition: {e}")
 
     logger.info("Configuration loaded and validated against schema successfully.")
