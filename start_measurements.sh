@@ -25,6 +25,14 @@ if ! python3 -m pip --version >/dev/null 2>&1; then
     exit 1
 fi
 
+echo "[INFO] Checking Firefox..."
+if ! command -v firefox >/dev/null 2>&1; then
+    echo "[WARN] Firefox not found. Installing Firefox via apt-get..."
+    sudo apt-get update && sudo apt-get install -y firefox
+else
+    echo "[INFO] Firefox is installed."
+fi
+
 VENV_DIR="/tmp/measurement_venv_$$"
 echo "[INFO] Creating virtual environment at $VENV_DIR"
 python3 -m venv "$VENV_DIR"
@@ -51,3 +59,4 @@ if [ $EXIT_CODE -ne 0 ]; then
 fi
 
 echo "[INFO] Measurement run completed successfully."
+
