@@ -50,6 +50,7 @@ def temp_environment(tmp_path, monkeypatch):
                         "cell_height_px": {"type": "integer"},
                         "grid_thickness": {"type": "integer"},
                         "grid_color": {"type": "string"},
+                        "text_size": {"type": "integer"},
                         "text_color": {"type": "string"},
                     },
                     "required": [
@@ -57,6 +58,7 @@ def temp_environment(tmp_path, monkeypatch):
                         "cell_height_px",
                         "grid_thickness",
                         "grid_color",
+                        "text_size",
                         "text_color",
                     ],
                 },

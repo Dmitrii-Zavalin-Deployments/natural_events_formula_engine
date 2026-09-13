@@ -21,6 +21,7 @@ def test_integration_measure_object_dry_run(temp_environment):
             "grid_thickness": 2,
             "grid_color": "#00FFFF",
             "text_color": "#000000",
+            "text_size": 12,
         },
     }
     with open(temp_environment / "config" / "config.json", "w") as cf:
@@ -68,6 +69,7 @@ def test_integration_measure_object_full_measurements(temp_environment):
             "grid_thickness": 2,
             "grid_color": "#00FFFF",
             "text_color": "#000000",
+            "text_size": 12,
         },
     }
     with open(temp_environment / "config" / "config.json", "w") as cf:
