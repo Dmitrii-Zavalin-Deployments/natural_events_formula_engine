@@ -1,9 +1,9 @@
 import csv
 import json
-import os
 from unittest.mock import patch
-import numpy as np
+
 import cv2
+import numpy as np
 
 from measure_object import main
 
