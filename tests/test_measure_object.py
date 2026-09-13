@@ -1,9 +1,6 @@
-import os
-import sys
 import cv2
 import numpy as np
 import pytest
-from unittest.mock import patch
 
 from measure_object import main
 
