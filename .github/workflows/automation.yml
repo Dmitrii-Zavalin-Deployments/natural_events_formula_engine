@@ -329,7 +329,7 @@ jobs:
           git add data/
 
           # 5. Commit/Push with Notes
-          if [ -n "$(git status --porcelain data/testing-input-output/)" ]; then
+          if [ -n "$(git status --porcelain data/)" ]; then
             git commit -m "🤖 robot b: sync testing assets [${{ job.status }}]"
             TARGET_COMMIT=$(git rev-parse HEAD)
 
