@@ -85,7 +85,7 @@ def find_object_xy(img):
         return x_min, y_min, (x_min, y_min, x_min + tpl_w, y_min + tpl_h)
 
     res = cv2.matchTemplate(search, OBJECT_TEMPLATE, cv2.TM_CCOEFF_NORMED)
-    _, max_val, _, max_loc = cv2.minMaxLoc(res)
+    _, __max_val, _, max_loc = cv2.minMaxLoc(res)
 
     sx, sy = max_loc
     object_x = x_min + sx + OBJECT_OFFSET_X
