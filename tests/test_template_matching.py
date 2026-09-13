@@ -1,7 +1,7 @@
-import os
 import cv2
 import numpy as np
 import pytest
+
 from src.core import template_matching
 
 
