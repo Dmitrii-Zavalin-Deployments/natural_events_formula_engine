@@ -3,8 +3,8 @@
 import csv
 import logging
 import os
-import subprocess
 import sys
+import webbrowser
 
 import cv2
 
@@ -42,9 +42,7 @@ def main():
         sys.exit(1)
 
     if mode not in {"dry_run", "measurements"}:
-        logger.error(
-            f"[CONFIG ERROR] Invalid execution mode '{mode}'. Expected 'dry_run' or 'measurements'."
-        )
+        logger.error(f"[CONFIG ERROR] Invalid execution mode '{mode}'.")
         sys.exit(1)
 
     if not os.path.exists(raw_folder):
@@ -67,7 +65,7 @@ def main():
     records = []
 
     if mode == "measurements":
-        print("\nEach image will open in Firefox. Enter the measurement cell number.\n")
+        print("\nOpening image preview... Enter the measurement cell number.\n")
 
     image_meta_map = {}
     for idx, fn in enumerate(files, start=1):
@@ -83,7 +81,7 @@ def main():
 
         if mode == "measurements":
             abs_processed_path = os.path.abspath(processed_path)
-            subprocess.Popen(["firefox", abs_processed_path])
+            webbrowser.open(f"file://{abs_processed_path}")
             print("--------------------------------------------------")
             print(f"[{idx}/{len(files)}] Image: {fn} | Time: {timestamp}")
             cell_input = input(" -> Enter Natural Event Cell Number: ").strip()
@@ -103,7 +101,6 @@ def main():
             writer = csv.writer(f)
             writer.writerow(["datetime", "cell_number", "x_range", "y_range"])
 
-            # Process manual reference entries
             for ts, fn, cell_val in records:
                 meta = image_meta_map.get(fn, [])
                 resolved_cell = int(cell_val) if cell_val.isdigit() else 0
@@ -114,7 +111,6 @@ def main():
                         break
                 writer.writerow([ts, resolved_cell, x_rng, y_rng])
 
-            # Process automatic detections
             for fn in files:
                 raw_path = os.path.join(raw_folder, fn)
                 processed_path = os.path.join(processed_folder, fn)

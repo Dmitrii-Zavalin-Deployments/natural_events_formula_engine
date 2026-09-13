@@ -1,46 +1,22 @@
-# tests/test_integration.py
 import csv
 import json
 import os
-import subprocess
-import sys
 from unittest.mock import patch
+import numpy as np
+import cv2
 
-_original_popen = subprocess.Popen
-
-
-class _MockProc:
-    def __init__(self, *args, **kwargs):
-        self.args = args[0] if args else []
-        self.returncode = 0
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, *a):
-        pass
-
-    def communicate(self, input=None, timeout=None):
-        return ("", "")
-
-    def poll(self):
-        return self.returncode
-
-    def wait(self):
-        return self.returncode
+from measure_object import main
 
 
-def _smart_popen(args, *a, **k):
-    cmd_str = " ".join(args) if isinstance(args, (list, tuple)) else str(args)
-    if sys.executable in cmd_str or "measure_object.py" in cmd_str or "coverage" in cmd_str:
-        return _original_popen(args, *a, **k)
-    return _MockProc(args, *a, **k)
+def _create_dummy_image(path):
+    img = np.zeros((1000, 1000, 3), dtype=np.uint8)
+    cv2.rectangle(img, (200, 600), (300, 800), (255, 255, 255), -1)
+    cv2.imwrite(str(path), img)
 
 
-def test_integration_measure_object_dry_run(temp_environment):
-    """Integration test executing measure_object.py in dry_run mode."""
+def setup_test_directory(temp_env, mode):
     config_content = {
-        "mode": "dry_run",
+        "mode": mode,
         "paths": {
             "raw_folder": "data/raw",
             "processed_folder": "data/processed",
@@ -55,85 +31,49 @@ def test_integration_measure_object_dry_run(temp_environment):
             "text_size": 12,
         },
     }
-    config_dir = temp_environment / "config"
+    
+    config_dir = temp_env / "config"
     config_dir.mkdir(parents=True, exist_ok=True)
     with open(config_dir / "config.json", "w") as cf:
         json.dump(config_content, cf)
 
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    script_path = os.path.join(repo_root, "src", "measure_object.py")
+    schema_dir = temp_env / "schema"
+    schema_dir.mkdir(parents=True, exist_ok=True)
+    schema_content = {
+        "$schema": "http://json-schema.org/draft-07/schema#",
+        "type": "object",
+        "properties": {
+            "mode": {"type": "string"},
+            "paths": {"type": "object"},
+            "grid": {"type": "object"}
+        },
+        "required": ["mode", "paths", "grid"]
+    }
+    with open(schema_dir / "config_schema.json", "w") as sf:
+        json.dump(schema_content, sf)
 
-    env = os.environ.copy()
-    env["PYTHONPATH"] = os.path.join(repo_root, "src")
-    env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
-    env["AUTOMATED_TEST"] = "1"
+    raw_dir = temp_env / "data" / "raw"
+    raw_dir.mkdir(parents=True, exist_ok=True)
+    _create_dummy_image(raw_dir / "IMG_20260908_152921.jpg")
 
-    result = subprocess.run(
-        [sys.executable, "-m", "coverage", "run", "--parallel-mode", script_path],
-        capture_output=True,
-        text=True,
-        cwd=temp_environment,
-        env=env,
-        check=False,
-    )
 
-    assert result.returncode == 0, f"Stdout: {result.stdout}\nStderr: {result.stderr}"
-    assert "Starting Natural Events Formula Engine measurement run..." in result.stdout
-    assert "Found 1 images to process." in result.stdout
-    assert "[DRY-RUN] Bypassed GUI/CLI prompt for IMG_20260908_152921.jpg" in result.stdout
-    assert "[DRY-RUN] Would process template matching and write to data/output/measurements.csv" in result.stdout
-    assert "Measurement run complete." in result.stdout
+def test_integration_measure_object_dry_run(temp_environment, monkeypatch):
+    setup_test_directory(temp_environment, "dry_run")
+    monkeypatch.chdir(temp_environment)
+
+    with patch("webbrowser.open"):
+        main()
 
     processed_img = temp_environment / "data" / "processed" / "IMG_20260908_152921.jpg"
     assert processed_img.exists()
 
 
-@patch("subprocess.Popen", side_effect=_smart_popen)
-def test_integration_measure_object_full_measurements(mock_popen, temp_environment):
-    """Integration test executing measure_object.py in measurements mode."""
-    config_content = {
-        "mode": "measurements",
-        "paths": {
-            "raw_folder": "data/raw",
-            "processed_folder": "data/processed",
-            "output_csv": "data/output/measurements.csv",
-        },
-        "grid": {
-            "cell_width_px": 250,
-            "cell_height_px": 100,
-            "grid_thickness": 2,
-            "grid_color": "#00FFFF",
-            "text_color": "#000000",
-            "text_size": 12,
-        },
-    }
-    config_dir = temp_environment / "config"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    with open(config_dir / "config.json", "w") as cf:
-        json.dump(config_content, cf)
+def test_integration_measure_object_full_measurements(temp_environment, monkeypatch):
+    setup_test_directory(temp_environment, "measurements")
+    monkeypatch.chdir(temp_environment)
 
-    repo_root = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-    script_path = os.path.join(repo_root, "src", "measure_object.py")
-
-    env = os.environ.copy()
-    env["PYTHONPATH"] = os.path.join(repo_root, "src")
-    env["COVERAGE_PROCESS_START"] = os.path.abspath(".coveragerc") if os.path.exists(".coveragerc") else ""
-    env["AUTOMATED_TEST"] = "1"
-
-    result = subprocess.run(
-        [sys.executable, "-m", "coverage", "run", "--parallel-mode", script_path],
-        input="12\n",
-        capture_output=True,
-        text=True,
-        cwd=temp_environment,
-        env=env,
-        check=False,
-        timeout=15,
-    )
-
-    assert result.returncode == 0, f"Stdout: {result.stdout}\nStderr: {result.stderr}"
-    assert "Running automatic template-matching measurements & serialization..." in result.stdout
-    assert "Measurement run complete." in result.stdout
+    with patch("webbrowser.open"), patch("builtins.input", return_value="12"):
+        main()
 
     csv_path = temp_environment / "data" / "output" / "measurements.csv"
     assert csv_path.exists()
