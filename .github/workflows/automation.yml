@@ -290,7 +290,7 @@ jobs:
           fi
 
           # Run core execution module under verbose tool monitoring to record Peak Resident Set Size (RSS)
-          /usr/bin/time -v xvfb-run --auto-servernum ./start_measurements.sh data/testing-input-output/ data/testing-input-output/ data/testing-input-output/test.csv 2> /tmp/memory_profile.log
+          /usr/bin/time -v xvfb-run --auto-servernum ./start_measurements.sh 2> /tmp/memory_profile.log
 
           # Unwind profile monitoring immediately post-execution 
           kill $SAMPLER_PID
