@@ -11,7 +11,6 @@ import sys
 
 import cv2
 import numpy as np
-import pytest
 
 # We insert the source directory into system paths to enable module resolution.
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "src")))
