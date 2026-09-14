@@ -323,8 +323,9 @@ jobs:
           To perform live measurements:
           1. Clone the repository locally on an **Ubuntu** environment.
           2. Update `config/config.json` with target configuration parameters.
-          3. Execute `./start_measurements.sh`.
-          4. Review visual outputs in Firefox and complete terminal prompts.
+          3. In `config/config.json`, switch the mode from `"mode": "dry_run"` to `"mode": "measurements"`.
+          4. Execute `./start_measurements.sh`.
+          5. Review visual outputs in Firefox and complete terminal prompts.
 
           ### 🔄 Execution Pipeline Output
 
