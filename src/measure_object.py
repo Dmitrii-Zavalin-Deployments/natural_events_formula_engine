@@ -112,14 +112,13 @@ def main():
                 writer.writerow([ts, resolved_cell, x_rng, y_rng])
 
             for fn in files:
-                raw_path = os.path.join(raw_folder, fn)
                 processed_path = os.path.join(processed_folder, fn)
                 timestamp = parse_timestamp_from_filename(fn)
 
-                img = cv2.imread(raw_path)
+                img = cv2.imread(processed_path)
                 h, w = img.shape[:2] if img is not None else (1000, 1000)
 
-                result = process_image(raw_path, processed_path)
+                result = process_image(processed_path, processed_path)
                 if result is None:
                     logger.warning(f"Could not detect object in {fn}")
                     continue
@@ -128,7 +127,6 @@ def main():
                 cell_num, x_range, y_range = get_cell_info_by_coords(
                     object_x, object_y, w, h, grid_config
                 )
-                writer.writerow([timestamp, cell_num, x_range, y_range])
                 logger.info(
                     f"{timestamp} → cell={cell_num}, x_range={x_range}, y_range={y_range}"
                 )
